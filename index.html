@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Guess My Vibe</title>
+  <meta name="theme-color" content="#0B0B0C" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Background -->
+  <div class="bg">
+    <div class="bgAura"></div>
+    <div class="bgBubbles" aria-hidden="true">
+      <span class="b b1"></span><span class="b b2"></span><span class="b b3"></span>
+      <span class="b b4"></span><span class="b b5"></span><span class="b b6"></span>
+    </div>
+    <div class="bgNoise" aria-hidden="true"></div>
+  </div>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="eye">👀</div>
+      <div class="brandText">
+        <div class="brandTitle">Guess my vibe</div>
+        <div class="brandSub" id="brandSub">no backend • share links</div>
+      </div>
+    </div>
+
+    <div class="topActions">
+      <button class="iconBtn" id="btnMore" type="button" aria-label="More">
+        <span class="icon">⋯</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- App -->
+  <main class="app" id="app">
+    <!-- SCREEN: HOME -->
+    <section class="screen" id="scrHome" aria-hidden="true">
+      <div class="hero">
+        <div class="heroCard card">
+          <div class="heroTitle">Dein Vibe</div>
+          <div class="heroTraits" id="homeTraits"></div>
+
+          <div class="homeMetaRow">
+            <div class="pill" id="pillStreak">🔥 0 day streak</div>
+            <div class="pill" id="pillWeek">This week: —</div>
+          </div>
+
+          <div class="primaryRow">
+            <button class="btn primary" id="btnChallenge" type="button">Can you guess me?</button>
+            <button class="btn secondary" id="btnEditSelf" type="button">Edit</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="ice">
+            <div class="iceTitle">Today’s Icebreaker</div>
+            <div class="iceQ" id="iceQ">—</div>
+            <div class="iceActions">
+              <button class="btn ghost" id="btnIceShare" type="button">Share</button>
+              <button class="btn ghost" id="btnIceCopy" type="button">Copy</button>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="weekly">
+            <div class="weeklyTitle">Weekly vibe report</div>
+            <div class="weeklyBody" id="weeklyBody">No data yet.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: SETUP -->
+    <section class="screen" id="scrSetup" aria-hidden="true">
+      <div class="center">
+        <div class="card big">
+          <div class="h1">Pick 3 traits</div>
+          <div class="p muted">Diese 3 Traits werden in deinem Link kodiert. Kein Account. Kein Backend.</div>
+
+          <div class="grid" id="setupGrid"></div>
+
+          <div class="row spaceBetween">
+            <div class="pill" id="setupCount">0/3</div>
+            <button class="btn primary" id="btnSaveSelf" type="button" disabled>Save</button>
+          </div>
+
+          <button class="btn link" id="btnSetupToHome" type="button">Back</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: GUESS INTRO -->
+    <section class="screen" id="scrGuessIntro" aria-hidden="true">
+      <div class="center lower">
+        <div class="card big">
+          <div class="h1">Guess their vibe</div>
+          <div class="p muted" id="guessIntroSub">Pick 3 traits that describe them.</div>
+
+          <div class="row">
+            <button class="btn primary" id="btnStartGuess" type="button">Start</button>
+            <button class="btn secondary" id="btnGuessIntroBack" type="button">Home</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: GUESS -->
+    <section class="screen" id="scrGuess" aria-hidden="true">
+      <div class="center">
+        <div class="card big">
+          <div class="h1">Pick 3 traits</div>
+          <div class="p muted">Was ist ihr Vibe?</div>
+
+          <div class="grid" id="guessGrid"></div>
+
+          <div class="row spaceBetween">
+            <div class="pill" id="guessCount">0/3</div>
+            <button class="btn primary" id="btnSendGuess" type="button" disabled>Send guess</button>
+          </div>
+
+          <button class="btn link" id="btnGuessBack" type="button">Back</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: GUESS SENT -->
+    <section class="screen" id="scrGuessSent" aria-hidden="true">
+      <div class="center">
+        <div class="card big">
+          <div class="h1">Sent ✅</div>
+          <div class="p muted">Du hast deinen Guess verschickt. Wenn sie den Link öffnen, können sie „hold to reveal“.</div>
+
+          <div class="row">
+            <button class="btn primary" id="btnGuessSentPing" type="button">Send ping 👀</button>
+            <button class="btn secondary" id="btnGuessSentConvo" type="button">Conversation starter</button>
+          </div>
+
+          <button class="btn link" id="btnGuessSentHome" type="button">Home</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: REVEAL HOLD -->
+    <section class="screen" id="scrHold" aria-hidden="true">
+      <div class="center">
+        <div class="card holdCard">
+          <div class="h1">Hold to reveal</div>
+          <div class="p muted">Press & hold.</div>
+
+          <div class="holdWrap">
+            <button class="orb" id="holdBtn" type="button" aria-label="Hold to reveal">
+              <svg class="ringSvg" viewBox="0 0 120 120" aria-hidden="true">
+                <circle class="ringTrack" cx="60" cy="60" r="46"></circle>
+                <circle class="ringProg" cx="60" cy="60" r="46"></circle>
+              </svg>
+              <div class="orbInner">
+                <div class="orbLabel">HOLD</div>
+              </div>
+            </button>
+            <div class="holdHint" id="holdHint">keep holding…</div>
+          </div>
+
+          <button class="btn link" id="btnHoldHome" type="button">Home</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: RESULT -->
+    <section class="screen" id="scrResult" aria-hidden="true">
+      <div class="center">
+        <div class="card big">
+          <div class="scoreRow">
+            <div class="score" id="resPct">0%</div>
+            <div class="scoreMeta">
+              <div class="h2" id="resLine1">—</div>
+              <div class="p muted" id="resLine2">—</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="h2">They think I’m</div>
+          <div class="chipRow" id="resTopChips"></div>
+
+          <div class="divider"></div>
+
+          <div class="h2">I think I’m</div>
+          <div class="chipRow" id="resSelfChips"></div>
+
+          <div class="divider"></div>
+
+          <div class="row">
+            <button class="btn primary" id="btnResChallenge" type="button">Can you guess me?</button>
+            <button class="btn secondary" id="btnResStory" type="button">Share story card</button>
+          </div>
+
+          <div class="row">
+            <button class="btn ghost" id="btnResMore" type="button">More</button>
+          </div>
+
+          <button class="btn link" id="btnResHome" type="button">Home</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: PING -->
+    <section class="screen" id="scrPing" aria-hidden="true">
+      <div class="center lower">
+        <div class="card big">
+          <div class="pingEye" id="pingEye">👀</div>
+          <div class="h1">I sent you something</div>
+          <div class="p muted" id="pingSub">Open it 👀</div>
+
+          <div class="row">
+            <button class="btn primary" id="btnPingOpen" type="button">Open</button>
+            <button class="btn secondary" id="btnPingHome" type="button">Home</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: CONVO -->
+    <section class="screen" id="scrConvo" aria-hidden="true">
+      <div class="center">
+        <div class="card big">
+          <div class="h1">Conversation starter</div>
+          <div class="p muted">Tap to share. (Cancel → still copied.)</div>
+
+          <div class="convoList">
+            <button class="convoBtn" id="convo1" type="button"></button>
+            <button class="convoBtn" id="convo2" type="button"></button>
+            <button class="convoBtn" id="convo3" type="button"></button>
+          </div>
+
+          <button class="btn link" id="btnConvoBack" type="button">Back</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- More Sheet -->
+  <div class="sheetBackdrop" id="sheetBackdrop" aria-hidden="true"></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="sheetGrab"></div>
+    <div class="sheetTitle">More</div>
+
+    <div class="sheetGrid">
+      <button class="sheetBtn" id="sheetShareText" type="button">Share text</button>
+      <button class="sheetBtn" id="sheetPing" type="button">Send ping 👀</button>
+      <button class="sheetBtn" id="sheetConvo" type="button">Conversation starter</button>
+      <button class="sheetBtn" id="sheetHome" type="button">Home</button>
+    </div>
+
+    <button class="btn ghost sheetClose" id="sheetClose" type="button">Close</button>
+  </div>
+
+  <!-- Storycard Sheet -->
+  <div class="sheetBackdrop" id="storyBackdrop" aria-hidden="true"></div>
+  <div class="sheet storySheet" id="storySheet" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="sheetGrab"></div>
+    <div class="sheetTitle">Story card</div>
+
+    <div class="storyPreviewWrap">
+      <img id="storyPreview" alt="Story preview" />
+    </div>
+
+    <div class="row">
+      <button class="btn primary" id="btnStoryShare" type="button">Share</button>
+      <button class="btn secondary" id="btnStoryDownload" type="button">Download</button>
+    </div>
+
+    <button class="btn ghost sheetClose" id="btnStoryClose" type="button">Close</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
