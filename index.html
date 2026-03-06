@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d12">
+<title>LTS Vibe V8</title>
+<style>
+:root{--bg:#0b0d12;--bg2:#12161f;--card:rgba(255,255,255,.06);--border:rgba(255,255,255,.12);--text:#f5f7fb;--muted:rgba(245,247,251,.72);--shadow:0 18px 60px rgba(0,0,0,.55);--r:22px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+html,body{height:100%}
+body{
+  margin:0;color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  background:
+    radial-gradient(1200px 700px at 20% 10%, rgba(255,255,255,.06), transparent 55%),
+    radial-gradient(1100px 700px at 85% 85%, rgba(255,255,255,.04), transparent 55%),
+    linear-gradient(180deg,var(--bg),var(--bg2));
+  display:flex;justify-content:center;align-items:flex-start;
+  padding:max(18px, env(safe-area-inset-top)) 18px max(28px, env(safe-area-inset-bottom));
+  overflow-x:hidden;
+}
+.app{width:min(560px,100%)}
+.top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.brand,.pill{display:inline-flex;align-items:center;gap:10px;padding:10px 12px;border-radius:999px;background:var(--card);border:1px solid var(--border);box-shadow:0 10px 28px rgba(0,0,0,.26)}
+.dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(255,255,255,.45));box-shadow:0 0 0 4px rgba(255,255,255,.08)}
+.pill{font-size:12px;color:var(--muted)} .pill b{color:var(--text)}
+.screen{background:rgba(14,17,25,.72);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;backdrop-filter:blur(18px)}
+.hdr{padding:18px 18px 10px;background:linear-gradient(180deg,rgba(255,255,255,.06),transparent)}
+.ttl{margin:0;font-size:30px;line-height:1.06}
+.sub{margin:10px 0 0;color:var(--muted);font-size:15px;line-height:1.35}
+.body{padding:14px 18px 18px}
+.mini{font-size:12px;color:var(--muted)}
+.panel{border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);padding:14px}
+.big{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:14px;border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.11),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.14)}
+.score{font-size:34px;font-weight:950}
+.tag{font-size:12px;color:var(--muted);padding:7px 10px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.12)}
+.btn{appearance:none;border:none;cursor:pointer;padding:15px 16px;border-radius:18px;font-weight:900;color:var(--text);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.14);box-shadow:0 12px 22px rgba(0,0,0,.28);width:100%}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.primary{background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(255,255,255,.44));color:#0b0d12}
+.btn.party{background:linear-gradient(135deg,#ffd25f,#ff8d3a);color:#111}
+.btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.20);box-shadow:none;color:var(--muted)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.input{width:100%;padding:15px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.22);color:var(--text);font-size:17px;outline:none}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:430px){.grid{grid-template-columns:1fr}.ttl{font-size:28px}}
+.chip,.rank,.mixBar,.holdBtn,.btn,.panel,.brand,.pill,canvas{user-select:none}
+.chip{padding:12px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);cursor:pointer;position:relative}
+.chip .l{font-weight:950}.chip .m{margin-top:4px;font-size:12px;color:var(--muted)}
+.chip.sel{background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));border-color:rgba(255,255,255,.22)}
+.chip.sel:after{content:"✓";position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);font-weight:950}
+.holdWrap{display:flex;align-items:center;justify-content:center;padding:10px 0 2px}
+.holdBtn{width:220px;height:220px;border-radius:999px;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%, rgba(255,255,255,.95), rgba(255,255,255,.25));color:#0b0d12;border:1px solid rgba(255,255,255,.22);box-shadow:0 20px 50px rgba(0,0,0,.40);position:relative;overflow:hidden;touch-action:none}
+.ring{position:absolute;inset:10px;border-radius:999px;border:10px solid rgba(11,13,18,.18)}
+.ring:before{content:"";position:absolute;inset:-10px;border-radius:999px;border:10px solid transparent;border-top-color:rgba(11,13,18,.55);transform:rotate(var(--deg,-90deg));transition:transform .05s linear}
+.rank{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);margin-top:8px}
+.rank .left{display:flex;align-items:center;gap:10px}
+.mixBar{margin-top:10px;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10)}
+.mixTrack{height:12px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:8px}
+.mixFill{height:100%;border-radius:999px;background:linear-gradient(90deg,rgba(255,255,255,.92),rgba(255,255,255,.35))}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.badge{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);font-size:12px;font-weight:800}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(18,18,26,.88);border:1px solid rgba(255,255,255,.12);box-shadow:var(--shadow);padding:10px 12px;border-radius:999px;font-size:13px;color:var(--text);opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;z-index:80;max-width:calc(100vw - 24px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-2px)}
+canvas{width:100%;height:auto;border-radius:18px;border:1px solid rgba(255,255,255,.12);box-shadow:var(--shadow);background:#0b0d12}
+.footer{margin-top:14px;color:rgba(245,247,251,.5);font-size:12px;line-height:1.35;text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="brand"><span class="dot"></span><b>LTS Vibe V8</b> <span class="mini">👀</span></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><div class="pill">🔥 Streak: <b id="streakP">0</b></div><div class="pill">🏆 Badge: <b id="badgeP">—</b></div></div>
+  </div>
+
+  <section class="screen" id="sStart">
+    <div class="hdr">
+      <h1 class="ttl">Starte deinen Vibe-Check 👀</h1>
+      <p class="sub">Wie heißt du? Dann geht’s direkt in WhatsApp. Schnell, simpel, stabil.</p>
+    </div>
+    <div class="body">
+      <div class="panel">
+        <div class="mini" style="margin-bottom:8px">Wie heißt du? 😎</div>
+        <input class="input" id="targetName" placeholder="z.B. Justus">
+        <div style="margin-top:12px"><button class="btn primary" id="btnCreate" disabled>IN WHATSAPP TEILEN 🚀</button></div>
+        <div style="margin-top:10px"><button class="btn ghost" id="btnMoreShare">ANDERS TEILEN</button></div>
+        <div class="mini" style="margin-top:10px">Text sagt dann automatisch: „Bewerte Justus mit 3 Vibes.“</div>
+      </div>
+      <div style="margin-top:14px" class="panel"><div class="big"><div><div class="mini">Dein Score</div><div class="score" id="scoreNow">10.000</div></div><div class="tag" id="multTag">x1 Mult</div></div></div>
+      <div class="footer">Birthday Project for Justus 🎂 · funny mix + ranking feeling</div>
+    </div>
+  </section>
+
+  <section class="screen" id="sVote" style="display:none">
+    <div class="hdr"><h1 class="ttl" id="voteTitle">Bewerte …</h1><p class="sub">Wähle genau 3 Vibes ✨</p></div>
+    <div class="body">
+      <div class="panel" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div class="mini">Ausgewählt: <strong id="selC">0</strong>/3</div><button class="btn party" id="btnPoke">PARTY 🎉</button></div>
+      <div class="grid" id="grid"></div>
+      <div style="margin-top:12px"><button class="btn primary" id="btnSend" disabled>ERGEBNIS SENDEN 💥</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="sReveal" style="display:none">
+    <div class="hdr"><h1 class="ttl" id="revealTitle">Jetzt Reveal 👀</h1><p class="sub">Halte den runden Button.</p></div>
+    <div class="body">
+      <div class="holdWrap"><div class="holdBtn" id="holdBtn"><div class="ring" id="ring"></div><div style="text-align:center"><div style="font-size:16px;font-weight:950">HALTEN</div><div style="font-size:12px;font-weight:900;opacity:.72;margin-top:6px" id="holdHint">👀</div></div></div></div>
+      <div class="mini" style="text-align:center;margin-top:10px">Dann kommt der Vibe-Mix.</div>
+      <div style="margin-top:12px"><button class="btn party" id="btnParty">PARTYKNOPF 🎁</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="sResult" style="display:none">
+    <div class="hdr"><h1 class="ttl" id="resultTitle">Ergebnis</h1><p class="sub">Screenshot und im Chat posten.</p></div>
+    <div class="body">
+      <div class="panel" id="resultBox"></div>
+      <div style="margin-top:12px"><canvas id="card" width="1080" height="1920"></canvas></div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn primary" id="btnShareCard">SHARE CARD</button><button class="btn" id="btnDownload">DOWNLOAD</button><button class="btn ghost" id="btnReset">NEUER LINK</button></div>
+      <div class="footer">Birthday Project for Justus 🎂 · lokal gespeichert · kein Backend</div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const DB_KEY="ltsvibe_v8_db", STREAK_KEY="ltsvibe_v8_streak";
+const VIBES=[
+{e:"🏆",l:"JB29 GOLD",m:"rare badge",s:500},
+{e:"🐐",l:"GOAT",m:"stark",s:350},
+{e:"😎",l:"Digger",m:"stabil",s:120},
+{e:"❓",l:"Darf er das?",m:"zu smooth",s:140},
+{e:"👀",l:"Checkst du?",m:"inside joke",s:130},
+{e:"🔥",l:"He cooked",m:"stark geliefert",s:260},
+{e:"✨",l:"Iconic",m:"clean",s:180},
+{e:"👑",l:"Main Character",m:"plot armor",s:200},
+{e:"🫡",l:"Ehre",m:"respekt",s:160},
+{e:"⭐",l:"Legendary",m:"einfach stark",s:240},
+{e:"🧊",l:"Ice Cold",m:"cool geblieben",s:150},
+{e:"🗣️",l:"Chat King",m:"lustig",s:110}
+];
+const screens={start:$("sStart"),vote:$("sVote"),reveal:$("sReveal"),result:$("sResult")};
+function show(name){Object.keys(screens).forEach(k=>screens[k].style.display=(k===name?"block":"none"));window.scrollTo({top:0,behavior:"smooth"})}
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast._tm);toast._tm=setTimeout(()=>t.classList.remove("show"),1700)}
+function vibr(ms){try{navigator.vibrate&&navigator.vibrate(ms||25)}catch(e){}}
+document.addEventListener("contextmenu",e=>e.preventDefault(),{passive:false});
+document.addEventListener("selectstart",e=>e.preventDefault(),{passive:false});
+function loadJSON(key,f){try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):f}catch(e){return f}}
+function saveJSON(key,obj){try{localStorage.setItem(key,JSON.stringify(obj))}catch(e){}}
+function loadDB(){return loadJSON(DB_KEY,{byTarget:{},scoreBase:10000,scoreDelta:0})}
+function saveDB(db){saveJSON(DB_KEY,db)}
+function loadStreak(){return loadJSON(STREAK_KEY,{last:null,streak:0,mult:1})}
+function saveStreak(s){saveJSON(STREAK_KEY,s)}
+function todayKey(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function yesterdayKey(){const d=new Date(Date.now()-86400000);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function bumpStreak(){const s=loadStreak(),t=todayKey();if(s.last===t)return s;if(s.last===yesterdayKey())s.streak+=1;else s.streak=1;s.last=t;s.mult=Math.min(5,1+Math.floor((s.streak-1)/2));saveStreak(s);return s}
+function applyStreakUI(){const s=loadStreak();$("streakP").textContent=String(s.streak||0);$("multTag").textContent="x"+(s.mult||1)+" Mult"}
+function globalScore(){const db=loadDB();return (db.scoreBase||10000)+(db.scoreDelta||0)}
+function setBadgeText(txt){$("badgeP").textContent=txt||"—";$("scoreNow").textContent=globalScore().toLocaleString("de-DE")}
+function encodePayload(obj){return btoa(unescape(encodeURIComponent(JSON.stringify(obj))))}
+function decodePayload(str){try{return JSON.parse(decodeURIComponent(escape(atob(str))))}catch(e){return null}}
+function buildLink(payload){const u=new URL(location.href);u.searchParams.set("v",encodePayload(payload));u.searchParams.set("t",String(Date.now()).slice(-6));return u.toString()}
+function parsePayload(){const u=new URL(location.href),v=u.searchParams.get("v");return v?decodePayload(v):null}
+function newId(){return Math.random().toString(36).slice(2,10)+"-"+Date.now().toString(36).slice(-6)}
+let currentTarget=null,currentName="",selected=[],partyOn=false,lastShareText="",lastShareUrl="";
+function renderStart(){applyStreakUI();$("scoreNow").textContent=globalScore().toLocaleString("de-DE")}
+function buildShareText(name,link,isResult=false){
+  if(isResult) return "👀 LTS Vibe\n\nHier ist das Ergebnis für "+name+".\nJetzt zurückschicken 💀\n\n👇\n"+link;
+  return "👀 LTS Vibe\n\nBewerte "+name+" mit 3 Vibes.\n\nDauert 5 Sekunden 💀\n\n👇\n"+link;
+}
+function openWhatsAppWith(text){ location.href="https://wa.me/?text="+encodeURIComponent(text); }
+async function tryNativeShare(text,url){
+  if(navigator.share){
+    try{ await navigator.share({title:"LTS Vibe",text,url}); toast("geteilt ✅"); return true; }catch(e){}
+  }
+  try{ await navigator.clipboard.writeText(text); toast("kopiert ✅"); return true; }catch(e){}
+  return false;
+}
+async function createLink(){
+  const name=$("targetName").value.trim();
+  if(!name){toast("Bitte Namen eingeben");return}
+  currentName=name; currentTarget=newId(); bumpStreak(); applyStreakUI();
+  const link=buildLink({type:"vote",targetId:currentTarget,targetName:name});
+  lastShareText=buildShareText(name,link,false); lastShareUrl=link;
+  openWhatsAppWith(lastShareText);
+}
+async function moreShare(){
+  const name=$("targetName").value.trim();
+  if(!name){toast("Bitte Namen eingeben");return}
+  const link=buildLink({type:"vote",targetId:newId(),targetName:name});
+  const text=buildShareText(name,link,false);
+  const ok=await tryNativeShare(text,link);
+  if(!ok) openWhatsAppWith(text);
+}
+function confettiBurst(){const N=36;for(let i=0;i<N;i++){const s=document.createElement("span");s.textContent=["🎉","🎁","✨","⭐","🎊"][Math.floor(Math.random()*5)];s.style.position="fixed";s.style.left=(Math.random()*100)+"vw";s.style.top="-10px";s.style.fontSize=(14+Math.random()*22)+"px";s.style.zIndex="99";const dur=900+Math.random()*900,drift=(Math.random()*2-1)*80;s.animate([{transform:"translate(0,0)",opacity:1},{transform:"translate("+drift+"px,105vh) rotate("+(Math.random()*720-360).toFixed(0)+"deg)",opacity:.95}],{duration:dur,easing:"cubic-bezier(.2,.7,.2,1)"});document.body.appendChild(s);setTimeout(()=>s.remove(),dur+60)}}
+function initVote(payload){currentTarget=payload.targetId;currentName=payload.targetName||"diese Person";selected=[];partyOn=false;$("voteTitle").textContent="Bewerte "+currentName+" 😎";$("selC").textContent="0";$("btnSend").disabled=true;const grid=$("grid");grid.innerHTML="";VIBES.slice().sort(()=>Math.random()-0.5).forEach(it=>{const d=document.createElement("div");d.className="chip";d.innerHTML='<div class="l">'+it.e+' '+it.l+'</div><div class="m">'+it.m+'</div>';d.addEventListener("click",ev=>{ev.preventDefault();vibr(10);const idx=selected.indexOf(it.l);if(idx>=0){selected.splice(idx,1);d.classList.remove("sel")}else{if(selected.length>=3){toast("Nur 3 😭");vibr(25);return}selected.push(it.l);d.classList.add("sel")}$("selC").textContent=String(selected.length);$("btnSend").disabled=(selected.length!==3)},{passive:false});grid.appendChild(d)});show("vote")}
+async function sendVote(){if(selected.length!==3){toast("Wähl genau 3");return}const ret=buildLink({type:"reveal",targetId:currentTarget,targetName:currentName,picks:selected,party:partyOn?1:0});const text=buildShareText(currentName,ret,True=False)  }
+</script>
+</body>
+</html>
